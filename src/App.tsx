@@ -1,4 +1,6 @@
-import './App.css'
+import Flashcard from './components/Flashcard';
+import { flashcards } from './data/flashcards';
+import './App.css';
 
 function App() {
   return (
@@ -11,10 +13,10 @@ function App() {
       </header>
 
       <section className="app__content">
-        <p>Your flash cards will appear here.</p>
+        <Flashcard flashcard={flashcards[0]} />
       </section>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;

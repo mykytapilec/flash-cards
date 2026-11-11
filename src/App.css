@@ -28,6 +28,33 @@
   width: 100%;
 }
 
+.app__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app__progress-track {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: #e2e8f0;
+}
+
+.app__progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background-color: #6366f1;
+  transition: width 0.3s ease;
+}
+
+.app__progress-label {
+  color: #64748b;
+  font-size: 0.875rem;
+  text-align: right;
+}
+
 .app__navigation {
   display: flex;
   align-items: center;

@@ -7,6 +7,7 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const currentFlashcard = flashcards[currentIndex];
+  const progress = ((currentIndex + 1) / flashcards.length) * 100;
 
   const handlePrevious = () => {
     setCurrentIndex((previousIndex) =>
@@ -30,6 +31,25 @@ function App() {
       </header>
 
       <section className="app__content">
+        <div
+          className="app__progress"
+          role="progressbar"
+          aria-label="Flashcard progress"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress}
+        >
+          <div className="app__progress-track">
+            <div
+              className="app__progress-bar"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="app__progress-label">
+            {currentIndex + 1} of {flashcards.length} cards
+          </span>
+        </div>
+
         <Flashcard key={currentFlashcard.id} flashcard={currentFlashcard} />
 
         <div className="app__navigation">

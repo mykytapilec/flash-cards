@@ -22,15 +22,5 @@
 }
 
 .app__content {
-  display: flex;
-  min-height: 240px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background-color: #fff;
-}
-
-.app__content p {
-  color: #6b7280;
+  width: 100%;
 }

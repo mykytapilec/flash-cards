@@ -1,8 +1,25 @@
+import { useState } from 'react';
 import Flashcard from './components/Flashcard';
 import { flashcards } from './data/flashcards';
 import './App.css';
 
 function App() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const currentFlashcard = flashcards[currentIndex];
+
+  const handlePrevious = () => {
+    setCurrentIndex((previousIndex) =>
+      previousIndex === 0 ? flashcards.length - 1 : previousIndex - 1,
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((previousIndex) =>
+      previousIndex === flashcards.length - 1 ? 0 : previousIndex + 1,
+    );
+  };
+
   return (
     <main className="app">
       <header className="app__header">
@@ -13,7 +30,29 @@ function App() {
       </header>
 
       <section className="app__content">
-        <Flashcard flashcard={flashcards[0]} />
+        <Flashcard key={currentFlashcard.id} flashcard={currentFlashcard} />
+
+        <div className="app__navigation">
+          <button
+            className="app__navigation-button"
+            onClick={handlePrevious}
+            type="button"
+          >
+            Previous
+          </button>
+
+          <span className="app__counter">
+            {currentIndex + 1} / {flashcards.length}
+          </span>
+
+          <button
+            className="app__navigation-button"
+            onClick={handleNext}
+            type="button"
+          >
+            Next
+          </button>
+        </div>
       </section>
     </main>
   );

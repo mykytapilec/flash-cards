@@ -12,6 +12,7 @@ function App() {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
   const currentFlashcard = flashcards[currentIndex];
   const progress =
@@ -73,6 +74,49 @@ function App() {
     );
   };
 
+  const handleStartEditing = () => {
+    setQuestion(currentFlashcard.question);
+    setAnswer(currentFlashcard.answer);
+    setError('');
+    setIsEditing(true);
+  };
+
+  const handleCancelEditing = () => {
+    setQuestion('');
+    setAnswer('');
+    setError('');
+    setIsEditing(false);
+  };
+
+  const handleSaveChanges = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const trimmedQuestion = question.trim();
+    const trimmedAnswer = answer.trim();
+
+    if (!trimmedQuestion || !trimmedAnswer) {
+      setError('Please fill in both fields.');
+      return;
+    }
+
+    setFlashcards((previousFlashcards) =>
+      previousFlashcards.map((flashcard) =>
+        flashcard.id === currentFlashcard.id
+          ? {
+              ...flashcard,
+              question: trimmedQuestion,
+              answer: trimmedAnswer,
+            }
+          : flashcard,
+      ),
+    );
+
+    setQuestion('');
+    setAnswer('');
+    setError('');
+    setIsEditing(false);
+  };
+
   return (
     <main className="app">
       <header className="app__header">
@@ -106,42 +150,119 @@ function App() {
 
         {currentFlashcard ? (
           <>
-            <Flashcard
-              key={currentFlashcard.id}
-              flashcard={currentFlashcard}
-            />
-
-            <div className="app__navigation">
-              <button
-                className="app__navigation-button"
-                onClick={handlePrevious}
-                type="button"
-                disabled={flashcards.length <= 1}
+            {isEditing ? (
+              <form
+                className="app__form app__edit-form"
+                onSubmit={handleSaveChanges}
               >
-                Previous
-              </button>
+                <h2 className="app__form-title">Edit flashcard</h2>
 
-              <span className="app__counter">
-                {currentIndex + 1} / {flashcards.length}
-              </span>
+                <div className="app__form-field">
+                  <label className="app__form-label" htmlFor="question">
+                    Question
+                  </label>
+                  <input
+                    className="app__form-input"
+                    id="question"
+                    name="question"
+                    onChange={(event) => {
+                      setQuestion(event.target.value);
+                      setError('');
+                    }}
+                    placeholder="Enter a question"
+                    type="text"
+                    value={question}
+                  />
+                </div>
 
-              <button
-                className="app__navigation-button"
-                onClick={handleNext}
-                type="button"
-                disabled={flashcards.length <= 1}
-              >
-                Next
-              </button>
-            </div>
+                <div className="app__form-field">
+                  <label className="app__form-label" htmlFor="answer">
+                    Answer
+                  </label>
+                  <textarea
+                    className="app__form-textarea"
+                    id="answer"
+                    name="answer"
+                    onChange={(event) => {
+                      setAnswer(event.target.value);
+                      setError('');
+                    }}
+                    placeholder="Enter an answer"
+                    rows={3}
+                    value={answer}
+                  />
+                </div>
 
-            <button
-              className="app__delete-button"
-              onClick={handleDeleteFlashcard}
-              type="button"
-            >
-              Delete Flashcard
-            </button>
+                {error && (
+                  <p className="app__form-error" role="alert">
+                    {error}
+                  </p>
+                )}
+
+                <div className="app__form-actions">
+                  <button className="app__form-button" type="submit">
+                    Save Changes
+                  </button>
+
+                  <button
+                    className="app__cancel-button"
+                    onClick={handleCancelEditing}
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <Flashcard
+                  key={currentFlashcard.id}
+                  flashcard={currentFlashcard}
+                />
+
+                <div className="app__navigation">
+                  <button
+                    className="app__navigation-button"
+                    onClick={handlePrevious}
+                    type="button"
+                    disabled={flashcards.length <= 1}
+                  >
+                    Previous
+                  </button>
+
+                  <span className="app__counter">
+                    {currentIndex + 1} / {flashcards.length}
+                  </span>
+
+                  <button
+                    className="app__navigation-button"
+                    onClick={handleNext}
+                    type="button"
+                    disabled={flashcards.length <= 1}
+                  >
+                    Next
+                  </button>
+                </div>
+
+                <div className="app__card-actions">
+                  <button
+                    className="app__edit-button"
+                    onClick={handleStartEditing}
+                    type="button"
+                  >
+                    Edit Flashcard
+                  </button>
+
+                  <button
+                    className="app__delete-button"
+                    onClick={handleDeleteFlashcard}
+                    type="button"
+                  >
+                    Delete Flashcard
+                  </button>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <div className="app__empty-state">
@@ -154,12 +275,12 @@ function App() {
           <h2 className="app__form-title">Add a new flashcard</h2>
 
           <div className="app__form-field">
-            <label className="app__form-label" htmlFor="question">
+            <label className="app__form-label" htmlFor="new-question">
               Question
             </label>
             <input
               className="app__form-input"
-              id="question"
+              id="new-question"
               name="question"
               onChange={(event) => {
                 setQuestion(event.target.value);
@@ -167,17 +288,18 @@ function App() {
               }}
               placeholder="Enter a question"
               type="text"
-              value={question}
+              value={isEditing ? '' : question}
+              disabled={isEditing}
             />
           </div>
 
           <div className="app__form-field">
-            <label className="app__form-label" htmlFor="answer">
+            <label className="app__form-label" htmlFor="new-answer">
               Answer
             </label>
             <textarea
               className="app__form-textarea"
-              id="answer"
+              id="new-answer"
               name="answer"
               onChange={(event) => {
                 setAnswer(event.target.value);
@@ -185,17 +307,22 @@ function App() {
               }}
               placeholder="Enter an answer"
               rows={3}
-              value={answer}
+              value={isEditing ? '' : answer}
+              disabled={isEditing}
             />
           </div>
 
-          {error && (
+          {!isEditing && error && (
             <p className="app__form-error" role="alert">
               {error}
             </p>
           )}
 
-          <button className="app__form-button" type="submit">
+          <button
+            className="app__form-button"
+            type="submit"
+            disabled={isEditing}
+          >
             Add Flashcard
           </button>
         </form>

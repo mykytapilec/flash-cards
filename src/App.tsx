@@ -1,3 +1,4 @@
+
 import { useState, type FormEvent } from 'react';
 import Flashcard from './components/Flashcard';
 import { flashcards as initialFlashcards } from './data/flashcards';
@@ -13,7 +14,10 @@ function App() {
   const [error, setError] = useState('');
 
   const currentFlashcard = flashcards[currentIndex];
-  const progress = ((currentIndex + 1) / flashcards.length) * 100;
+  const progress =
+    flashcards.length > 0
+      ? ((currentIndex + 1) / flashcards.length) * 100
+      : 0;
 
   const handlePrevious = () => {
     setCurrentIndex((previousIndex) =>
@@ -55,6 +59,20 @@ function App() {
     setError('');
   };
 
+  const handleDeleteFlashcard = () => {
+    setFlashcards((previousFlashcards) =>
+      previousFlashcards.filter(
+        (flashcard) => flashcard.id !== currentFlashcard.id,
+      ),
+    );
+
+    setCurrentIndex((previousIndex) =>
+      previousIndex >= flashcards.length - 1
+        ? Math.max(previousIndex - 1, 0)
+        : previousIndex,
+    );
+  };
+
   return (
     <main className="app">
       <header className="app__header">
@@ -80,33 +98,57 @@ function App() {
             />
           </div>
           <span className="app__progress-label">
-            {currentIndex + 1} of {flashcards.length} cards
+            {flashcards.length > 0
+              ? `${currentIndex + 1} of ${flashcards.length} cards`
+              : 'No cards available'}
           </span>
         </div>
 
-        <Flashcard key={currentFlashcard.id} flashcard={currentFlashcard} />
+        {currentFlashcard ? (
+          <>
+            <Flashcard
+              key={currentFlashcard.id}
+              flashcard={currentFlashcard}
+            />
 
-        <div className="app__navigation">
-          <button
-            className="app__navigation-button"
-            onClick={handlePrevious}
-            type="button"
-          >
-            Previous
-          </button>
+            <div className="app__navigation">
+              <button
+                className="app__navigation-button"
+                onClick={handlePrevious}
+                type="button"
+                disabled={flashcards.length <= 1}
+              >
+                Previous
+              </button>
 
-          <span className="app__counter">
-            {currentIndex + 1} / {flashcards.length}
-          </span>
+              <span className="app__counter">
+                {currentIndex + 1} / {flashcards.length}
+              </span>
 
-          <button
-            className="app__navigation-button"
-            onClick={handleNext}
-            type="button"
-          >
-            Next
-          </button>
-        </div>
+              <button
+                className="app__navigation-button"
+                onClick={handleNext}
+                type="button"
+                disabled={flashcards.length <= 1}
+              >
+                Next
+              </button>
+            </div>
+
+            <button
+              className="app__delete-button"
+              onClick={handleDeleteFlashcard}
+              type="button"
+            >
+              Delete Flashcard
+            </button>
+          </>
+        ) : (
+          <div className="app__empty-state">
+            <h2>No flashcards available</h2>
+            <p>Add a new flashcard to start studying again.</p>
+          </div>
+        )}
 
         <form className="app__form" onSubmit={handleAddFlashcard}>
           <h2 className="app__form-title">Add a new flashcard</h2>

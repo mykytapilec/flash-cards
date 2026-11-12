@@ -1,13 +1,52 @@
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import Flashcard from './components/Flashcard';
 import { flashcards as initialFlashcards } from './data/flashcards';
 import type { Flashcard as FlashcardType } from './types/flashcard';
 import './App.css';
 
+const STORAGE_KEY = 'flash-cards';
+
+function isValidFlashcard(value: unknown): value is FlashcardType {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const flashcard = value as Record<string, unknown>;
+
+  return (
+    typeof flashcard.id === 'string' &&
+    typeof flashcard.question === 'string' &&
+    typeof flashcard.answer === 'string'
+  );
+}
+
+function loadFlashcards(): FlashcardType[] {
+  try {
+    const storedFlashcards = localStorage.getItem(STORAGE_KEY);
+
+    if (!storedFlashcards) {
+      return initialFlashcards;
+    }
+
+    const parsedFlashcards: unknown = JSON.parse(storedFlashcards);
+
+    if (
+      !Array.isArray(parsedFlashcards) ||
+      !parsedFlashcards.every(isValidFlashcard)
+    ) {
+      return initialFlashcards;
+    }
+
+    return parsedFlashcards;
+  } catch {
+    return initialFlashcards;
+  }
+}
+
 function App() {
   const [flashcards, setFlashcards] =
-    useState<FlashcardType[]>(initialFlashcards);
+    useState<FlashcardType[]>(loadFlashcards);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
@@ -19,6 +58,14 @@ function App() {
     flashcards.length > 0
       ? ((currentIndex + 1) / flashcards.length) * 100
       : 0;
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(flashcards));
+    } catch {
+      console.error('Unable to save flashcards to local storage.');
+    }
+  }, [flashcards]);
 
   const handlePrevious = () => {
     setCurrentIndex((previousIndex) =>

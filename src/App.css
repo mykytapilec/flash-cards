@@ -91,3 +91,101 @@
   font-weight: 600;
   text-align: center;
 }
+
+.app__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 16px;
+  padding: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background-color: #fff;
+}
+
+.app__form-title {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.app__form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app__form-label {
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.app__form-input,
+.app__form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #1e293b;
+  font: inherit;
+  font-size: 0.9375rem;
+}
+
+.app__form-input:focus,
+.app__form-textarea:focus {
+  border-color: #6366f1;
+  outline: 2px solid #c7d2fe;
+}
+
+.app__form-textarea {
+  resize: vertical;
+}
+
+.app__form-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.app__form-button {
+  align-self: flex-start;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #6366f1;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.app__form-button:hover {
+  background-color: #4f46e5;
+}
+
+.app__form-button:focus-visible {
+  outline: 3px solid #a5b4fc;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding: 32px 16px;
+  }
+
+  .app__form {
+    padding: 24px 20px;
+  }
+
+  .app__navigation {
+    gap: 12px;
+  }
+
+  .app__navigation-button {
+    min-width: 100px;
+    padding: 10px 14px;
+  }
+}
